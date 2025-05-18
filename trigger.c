@@ -15,6 +15,15 @@ struct RGB {
     short int azul;
 };
 
+struct RGB compacta_lossy(int len_x, int len_y, unsigned char matriz[len_y][len_x]){
+    for(int i = 0; i < len_y; i++){
+        for(int j = 0; j < len_x; j++){
+            printf("%02X ", matriz[i][j]);
+        }
+        printf("\n");
+    } 
+}
+
 int main(int argc, char *argv[]){
 
     char path[30];
@@ -53,11 +62,10 @@ int main(int argc, char *argv[]){
 
     printf("\nNúmero de linhas: %d (0x%02X)\nNumero de colunas: %d (0x%02X)\n\nComeço da Imagem: %d (0x%02X)\n", imagem.linhas, imagem.linhas, imagem.colunas, imagem.colunas, imagem.offset, imagem.offset);
 
-    image = &image[imagem.offset];
 
-    for(int i = 0; i < file_size; i++){
-        printf("%02X ", image[i]);
-    } 
+    unsigned char (*imagem_matriz)[imagem.linhas] = (unsigned char (*)[imagem.linhas])&image[imagem.offset];
+
+    compacta_lossy(imagem.linhas, imagem.colunas, imagem_matriz);
 
     return 0;
 }

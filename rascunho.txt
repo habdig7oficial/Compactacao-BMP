@@ -1,0 +1,8 @@
+    unsigned char *image_matrix[imagem.colunas][imagem.linhas] = &image[imagem.offset];
+
+    for(int i = 0; i < imagem.colunas; i++){
+       for(int j = 0; j < imagem.linhas; j++){
+         printf("%02X ", image_matrix[i][j]);
+       }
+       printf("\n");
+    } 
