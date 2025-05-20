@@ -64,7 +64,36 @@ int main(int argc, char *argv[]){
 
     printf("\nNúmero de linhas: %d (0x%02X)\nNumero de colunas: %d (0x%02X)\n\nComeço da Imagem: %d (0x%02X)\n", imagem.linhas, imagem.linhas, imagem.colunas, imagem.colunas, imagem.offset, imagem.offset);
 
-    int i, j = 0;
+    image = &image[imagem.offset + 1];
+
+    struct RGB matriz[imagem.colunas][imagem.linhas];
+
+    for(int i = 0, j = 0, k = 0, l = 0; i < (imagem.linhas * imagem.colunas) * 3; i++){
+        if(k == imagem.linhas){
+            k = 0;
+            j = 0;
+            l++;
+        }
+
+        if(i % 3 == 0){
+            matriz[l][j].vermelho = image[i];
+           // printf("%d - Red: %02x (%d) ", l, image[i], j);
+        }
+        else if(i % 3 == 1){
+            matriz[l][j].verde = image[i];
+           // printf("Green: %02x (%d) ", image[i], j);
+        }
+        else{
+            matriz[l][j].azul = image[i];
+            //printf("Blue: %02x (%d) \n", image[i], j);
+            j++;
+            k++;
+        }   
+    }
+
+    
+
+    /*int i, j = 0;
         for(i = 0; i < 0x36; i++)
             printf("%02X ", image[i]);
         printf("\n");
@@ -73,7 +102,7 @@ int main(int argc, char *argv[]){
           for (j=0; j<22; j++)
             printf("%02X%02x%02x ", image[0x36+i*22*3+j*3], image[0x36+i*22*3+j*3+1], image[0x36+i*22*3+j*3+2]);
         printf ("\n");
-        }
+        }*/
 
     unsigned char (*imagem_matriz)[imagem.linhas] = (unsigned char (*)[imagem.linhas])&image[imagem.offset];
 
