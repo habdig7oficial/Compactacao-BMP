@@ -15,13 +15,15 @@ struct RGB {
     short int azul;
 };
 
-struct RGB compacta_lossy(int len_x, int len_y, unsigned char matriz[len_y][len_x]){
-    for(int i = 0; i < len_y; i++){
-        for(int j = 0; j < len_x; j++){
-            printf("%02X ", matriz[i][j]);
-        }
-        printf("\n");
-    } 
+struct RGB compacta_lossy(int len_x, int len_y, unsigned char matriz[len_y][len_x], int soma_x, int soma_y){
+    printf("\nEnd\n\n");
+
+    int setor_x = len_x / 2;
+    int setor_y = len_y / 2;
+    if( setor_x >= 3 && setor_y / 2 >= 3){
+      // compacta_lossy(setor_x, setor_y, matriz);
+    }
+        
 }
 
 int main(int argc, char *argv[]){
@@ -62,10 +64,20 @@ int main(int argc, char *argv[]){
 
     printf("\nNúmero de linhas: %d (0x%02X)\nNumero de colunas: %d (0x%02X)\n\nComeço da Imagem: %d (0x%02X)\n", imagem.linhas, imagem.linhas, imagem.colunas, imagem.colunas, imagem.offset, imagem.offset);
 
+    int i, j = 0;
+        for(i = 0; i < 0x36; i++)
+            printf("%02X ", image[i]);
+        printf("\n");
+        for(i=0; i < 20; i++)
+        {
+          for (j=0; j<22; j++)
+            printf("%02X%02x%02x ", image[0x36+i*22*3+j*3], image[0x36+i*22*3+j*3+1], image[0x36+i*22*3+j*3+2]);
+        printf ("\n");
+        }
 
     unsigned char (*imagem_matriz)[imagem.linhas] = (unsigned char (*)[imagem.linhas])&image[imagem.offset];
 
-    compacta_lossy(imagem.linhas, imagem.colunas, imagem_matriz);
+    //compacta_lossy(imagem.linhas, imagem.colunas, imagem_matriz);
 
     return 0;
 }
