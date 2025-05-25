@@ -20,10 +20,10 @@ struct RGB compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y]){
     int split_x = len_x / 2;
     int split_y = len_y / 2;
 
-    if(len_x <= 3 || len_y <= 3)
-        return matriz[(int)(split_x)][(int)(split_y)];
-
     printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
+
+    if(len_x <= 3 && len_y <= 3)
+        return matriz[(int)(split_x)][(int)(split_y)];
 
     struct RGB (* setor_2)[split_y] = (struct RGB (*)[split_y])&matriz[split_y];
 
@@ -32,7 +32,7 @@ struct RGB compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y]){
     //printf("Setor 2: \n");
     compacta(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y]);
    // printf("Setor 3: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_x])matriz[split_x]);
+    compacta(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x]);
     //printf("Setor 4: \n");
     compacta(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y]);
 }
