@@ -15,18 +15,26 @@ struct RGB {
     unsigned char azul;
 };
 
-struct RGB compacta(int len_x, int len_y, struct RGB *matriz[len_x][len_y]){
+struct RGB compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y]){
 
     int split_x = len_x / 2;
     int split_y = len_y / 2;
 
     if(len_x <= 3 || len_y <= 3)
-        return *matriz[(int)(split_x)][(int)(split_y)];
+        return matriz[(int)(split_x)][(int)(split_y)];
 
-    compacta(split_x, split_y, matriz[0][0]);
-    compacta(split_x, split_y, &matriz[0][split_y]);
-    compacta(split_x, split_y, &matriz[split_x][0]);
-    compacta(split_x, split_y, &matriz[split_x][split_y]);
+    printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
+
+    struct RGB (* setor_2)[split_y] = (struct RGB (*)[split_y])&matriz[split_y];
+
+    //printf("Setor 1: \n");
+    compacta(split_x, split_y, (struct RGB (*)[split_y])matriz );
+    //printf("Setor 2: \n");
+    compacta(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y]);
+   // printf("Setor 3: \n");
+    compacta(split_x, split_y, (struct RGB (*)[split_x])matriz[split_x]);
+    //printf("Setor 4: \n");
+    compacta(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y]);
 }
 
 
@@ -80,9 +88,9 @@ int main(int argc, char *argv[]){
             matriz[k][i].azul = image[j + 1];
             matriz[k][i].vermelho = image[j + 2];
 
-            printf("%d - Green: %02x (%d) ", k, image[j], i);
-            printf(" Blue: %02x (%d) ", image[j + 1], i);
-            printf(" Red: %02x (%d) %02X\n", image[j + 2], i, j);
+           // printf("%d - Green: %02x (%d) ", k, image[j], i);
+            //printf(" Blue: %02x (%d) ", image[j + 1], i);
+           // printf(" Red: %02x (%d) %02X\n", image[j + 2], i, j);
         }
         j += padding;
     }
@@ -90,9 +98,11 @@ int main(int argc, char *argv[]){
     
     for(int i = 0; i < imagem.linhas; i++){
         for(int j = 0; j < imagem.colunas; j++){
-           printf("\"#%02X%02X%02X\",\n", matriz[i][j].vermelho, matriz[i][j].verde, matriz[i][j].azul); 
+          // printf("\"#%02X%02X%02X\",\n", matriz[i][j].vermelho, matriz[i][j].verde, matriz[i][j].azul); 
         }
     }
+
+    compacta(imagem.linhas, imagem.colunas, matriz);
 
     return 0;
 }
