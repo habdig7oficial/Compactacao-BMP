@@ -15,26 +15,27 @@ struct RGB {
     unsigned char azul;
 };
 
-struct RGB compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y]){
+unsigned char *compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y], unsigned char *buffer){
 
     int split_x = len_x / 2;
     int split_y = len_y / 2;
 
     printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
 
-    if(len_x <= 3 && len_y <= 3)
-        return matriz[(int)(split_x)][(int)(split_y)];
-
-    struct RGB (* setor_2)[split_y] = (struct RGB (*)[split_y])&matriz[split_y];
+    if(len_x <= 3 && len_y <= 3){
+        printf("\n-------------\n");
+        //return matriz[(int)(split_x)][(int)(split_y)];
+        return 0;
+    }
 
     //printf("Setor 1: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_y])matriz );
+    compacta(split_x, split_y, (struct RGB (*)[split_y])matriz , buffer);
+    // printf("Setor 3: \n");
+    compacta(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x], buffer);
     //printf("Setor 2: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y]);
-   // printf("Setor 3: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x]);
+    compacta(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y], buffer);
     //printf("Setor 4: \n");
-    compacta(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y]);
+    compacta(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y], buffer);
 }
 
 
@@ -76,6 +77,10 @@ int main(int argc, char *argv[]){
 
     printf("\nNúmero de linhas: %d (0x%02X)\nNumero de colunas: %d (0x%02X)\n\nComeço da Imagem: %d (0x%02X)\n", imagem.linhas, imagem.linhas, imagem.colunas, imagem.colunas, imagem.offset, imagem.offset);
 
+    unsigned char *compacted_arr = malloc(file_size);
+
+    memcpy(compacted_arr, image, imagem.offset);
+
     image = &image[imagem.offset];
 
     struct RGB matriz[imagem.linhas][imagem.colunas];
@@ -102,7 +107,11 @@ int main(int argc, char *argv[]){
         }
     }
 
-    compacta(imagem.linhas, imagem.colunas, matriz);
+    compacta(imagem.linhas, imagem.colunas, matriz, compacted_arr);
+
+    for(int i = 0; i < file_size; i++){
+        printf("%02X ", compacted_arr[i]); 
+    }
 
     return 0;
 }
