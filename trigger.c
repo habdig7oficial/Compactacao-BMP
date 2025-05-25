@@ -15,27 +15,51 @@ struct RGB {
     unsigned char azul;
 };
 
-unsigned char *compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y], unsigned char *buffer){
+struct RGB compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y], unsigned char *buffer){
 
     int split_x = len_x / 2;
     int split_y = len_y / 2;
 
     printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
 
+    *(buffer + 0) = matriz[split_x][split_y].verde;
+    *(buffer + 1) = matriz[split_x][split_y].azul;
+    *(buffer + 2) = matriz[split_x][split_y].vermelho;
+
+
     if(len_x <= 3 && len_y <= 3){
         printf("\n-------------\n");
+        //printf("where %02x\n", matriz[(int)(split_x)][(int)(split_y)].verde);
         //return matriz[(int)(split_x)][(int)(split_y)];
-        return 0;
+        // printf("Base: %p\n", buffer);
+        return matriz[(int)(split_x)][(int)(split_y)];
     }
 
     //printf("Setor 1: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_y])matriz , buffer);
+    compacta(split_x, split_y, (struct RGB (*)[])matriz , (buffer) + 3);
+
+    
     // printf("Setor 3: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x], buffer);
+    //compacta(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x], buffer - 3);
+    /*
+        *(buffer_i + 3) = matriz[split_x][0].verde;
+    *(buffer_i + 4) = matriz[split_x][0].azul;
+    *(buffer_i + 5) = matriz[split_x][0].vermelho;*/
     //printf("Setor 2: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y], buffer);
+    //buffer += 9;
+    //compacta(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y], buffer - 3);
+    /*
+        *(buffer_i + 6) = matriz[split_x][0].verde;
+    *(buffer_i + 7) = matriz[split_x][0].azul;
+    *(buffer_i + 8) = matriz[split_x][0].vermelho;*/
     //printf("Setor 4: \n");
-    compacta(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y], buffer);
+    // compacta(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y], buffer);
+    /*
+        *(buffer_i + 9) = matriz[split_x][split_y].verde;
+    *(buffer_i + 10) = matriz[split_x][split_y].azul;
+    *(buffer_i + 11) = matriz[split_x][split_y].vermelho;*/
+
+    return matriz[split_x][split_y];
 }
 
 
@@ -107,11 +131,12 @@ int main(int argc, char *argv[]){
         }
     }
 
-    compacta(imagem.linhas, imagem.colunas, matriz, compacted_arr);
+    compacta(imagem.linhas, imagem.colunas, matriz, &compacted_arr[imagem.offset]);
 
-    for(int i = 0; i < file_size; i++){
-        printf("%02X ", compacted_arr[i]); 
+    for(int i = imagem.offset; i < 100; i++){
+        printf("%02X - %p \n", compacted_arr[i], &compacted_arr[i]); 
     }
+    
 
     return 0;
 }
