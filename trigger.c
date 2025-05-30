@@ -15,51 +15,47 @@ struct RGB {
     unsigned char azul;
 };
 
-struct RGB compacta(int len_x, int len_y, struct RGB matriz[len_x][len_y], unsigned char *buffer){
+struct Node {
+    struct RGB  *pixel;
+    struct Node *setor1;
+    struct Node *setor2;
+    struct Node *setor3;
+    struct Node *setor4;
+};
+
+struct Node *compact_tree(int len_y, int len_x, struct RGB matriz[len_y][len_x], unsigned char *buffer){
 
     int split_x = len_x / 2;
     int split_y = len_y / 2;
 
-    //printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
+    struct Node *v_atual = malloc(sizeof(struct Node));
+    v_atual -> pixel = &matriz[split_x][split_y];
 
-    *(buffer + 0) = matriz[split_x][split_y].verde;
-    *(buffer + 1) = matriz[split_x][split_y].azul;
-    *(buffer + 2) = matriz[split_x][split_y].vermelho;
-
+    printf("#%02X%02X%02X - <%d,%d>\n", v_atual -> pixel -> vermelho, v_atual -> pixel -> verde, v_atual -> pixel -> azul, split_x,split_y);
 
     if(len_x <= 3 && len_y <= 3){
         printf("\n-------------\n");
         //printf("where %02x\n", matriz[(int)(split_x)][(int)(split_y)].verde);
         //return matriz[(int)(split_x)][(int)(split_y)];
         // printf("Base: %p\n", buffer);
-        printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
-        return matriz[(int)(split_x + 1)][(int)(split_y + 1)];
+       // printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
+        return NULL;
     }
 
     //printf("Setor 1: \n");
-    compacta(split_x, split_y, (struct RGB (*)[])&matriz , (buffer) + 3);
+    compact_tree(split_x, split_y, (struct RGB (*)[])&matriz , (buffer) + 3);
 
     
     // printf("Setor 3: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x], buffer - 3);
-    /*
-        *(buffer_i + 3) = matriz[split_x][0].verde;
-    *(buffer_i + 4) = matriz[split_x][0].azul;
-    *(buffer_i + 5) = matriz[split_x][0].vermelho;*/
-    //printf("Setor 2: \n");
-    compacta(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y], buffer - 3);
-    /*
-        *(buffer_i + 6) = matriz[split_x][0].verde;
-    *(buffer_i + 7) = matriz[split_x][0].azul;
-    *(buffer_i + 8) = matriz[split_x][0].vermelho;*/
-    //printf("Setor 4: \n");
-    compacta(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y], buffer);
-    /*
-        *(buffer_i + 9) = matriz[split_x][split_y].verde;
-    *(buffer_i + 10) = matriz[split_x][split_y].azul;
-    *(buffer_i + 11) = matriz[split_x][split_y].vermelho;*/
+    //compact_tree(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x], buffer - 3);
 
-    return matriz[split_x][split_y];
+    //printf("Setor 2: \n");
+    //compact_tree(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y], buffer - 3);
+
+    //printf("Setor 4: \n");
+    //compact_tree(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y], buffer);
+
+    return NULL;
 }
 
 
@@ -109,30 +105,27 @@ int main(int argc, char *argv[]){
 
     struct RGB matriz[imagem.linhas][imagem.colunas];
 
-    int padding = (4 - (imagem.linhas % 4)) % 4;
-    for(int i = 0, j = 0; i < imagem.colunas; i++){
-        for(int k = 0; k < (imagem.linhas); j += 3, k++){
+    int padding = (4 - (imagem.colunas % 4)) % 4;
+    for(int k = 0, j = 0; k < imagem.linhas; k++){
+        for(int i = 0; i < (imagem.colunas); j += 3, i++){
 
             matriz[k][i].azul = image[j];
             matriz[k][i].verde = image[j + 1];
             matriz[k][i].vermelho = image[j + 2];
+
+            printf("#%02X%02X%02X ", matriz[k][i].vermelho, matriz[k][i].verde, matriz[k][i].azul); 
 
            // printf("%d - Green: %02x (%d) ", k, image[j], i);
             //printf(" Blue: %02x (%d) ", image[j + 1], i);
            // printf(" Red: %02x (%d) %02X\n", image[j + 2], i, j);
         }
         j += padding;
-    }
 
-    
-    for(int i = 0; i < imagem.linhas; i++){
-        for(int j = 0; j < imagem.colunas; j++){
-          printf("#%02X%02X%02X ", matriz[i][j].vermelho, matriz[i][j].verde, matriz[i][j].azul); 
-        }
         printf("\n");
     }
 
-    //compacta(imagem.linhas, imagem.colunas, matriz, &compacted_arr[imagem.offset]);
+
+    compact_tree(imagem.linhas, imagem.colunas, matriz, &compacted_arr[imagem.offset]);
 
     for(int i = imagem.offset; i < 100; i++){
         //printf("%02X - %p \n", compacted_arr[i], &compacted_arr[i]); 
