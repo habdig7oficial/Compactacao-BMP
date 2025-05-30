@@ -23,7 +23,7 @@ struct Node {
     struct Node *setor4;
 };
 
-struct Node *compact_tree(int len_y, int len_x, struct RGB matriz[len_y][len_x], unsigned char *buffer){
+struct Node *compact_tree(int len_y, int len_x, struct RGB matriz[len_y][len_x]){
 
     int split_x = len_x / 2;
     int split_y = len_y / 2;
@@ -34,28 +34,19 @@ struct Node *compact_tree(int len_y, int len_x, struct RGB matriz[len_y][len_x],
     printf("#%02X%02X%02X - <%d,%d>\n", v_atual -> pixel -> vermelho, v_atual -> pixel -> verde, v_atual -> pixel -> azul, split_x,split_y);
 
     if(len_x <= 3 && len_y <= 3){
-        printf("\n-------------\n");
+        //printf("\n-------------\n");
         //printf("where %02x\n", matriz[(int)(split_x)][(int)(split_y)].verde);
         //return matriz[(int)(split_x)][(int)(split_y)];
-        // printf("Base: %p\n", buffer);
        // printf("#%02X%02X%02X - <%d,%d>\n", matriz[split_x][split_y].vermelho, matriz[split_x][split_y].verde, matriz[split_x][split_y].azul, split_x,split_y);
-        return NULL;
+        return v_atual;
     }
 
-    //printf("Setor 1: \n");
-    compact_tree(split_x, split_y, (struct RGB (*)[])&matriz , (buffer) + 3);
+    v_atual -> setor1 = compact_tree(split_x, split_y, (struct RGB (*)[])&matriz);
+    v_atual -> setor2 = compact_tree(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x]);
+    v_atual -> setor3 = compact_tree(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y]);
+    v_atual -> setor4 = compact_tree(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y]);
 
-    
-    // printf("Setor 3: \n");
-    //compact_tree(split_x, split_y, (struct RGB (*)[split_x])&matriz[split_x], buffer - 3);
-
-    //printf("Setor 2: \n");
-    //compact_tree(split_x, split_y, (struct RGB (*)[split_y])&matriz[split_y], buffer - 3);
-
-    //printf("Setor 4: \n");
-    //compact_tree(split_x, split_y, (struct RGB (*)[])&matriz[split_x][split_y], buffer);
-
-    return NULL;
+    return v_atual;
 }
 
 
@@ -125,7 +116,8 @@ int main(int argc, char *argv[]){
     }
 
 
-    compact_tree(imagem.linhas, imagem.colunas, matriz, &compacted_arr[imagem.offset]);
+    struct Node tree = *compact_tree(imagem.linhas, imagem.colunas, matriz);
+    printf("\n#%02X%02X%02X\n", tree.setor1 -> pixel -> vermelho, tree.setor1 -> pixel -> verde, tree.setor1 -> pixel -> azul);
 
     for(int i = imagem.offset; i < 100; i++){
         //printf("%02X - %p \n", compacted_arr[i], &compacted_arr[i]); 
