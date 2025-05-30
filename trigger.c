@@ -49,6 +49,20 @@ struct Node *compact_tree(int len_y, int len_x, struct RGB matriz[len_y][len_x])
     return v_atual;
 }
 
+void free_tree(struct Node *this){
+    free(this -> pixel);
+    printf("this: %p\n", this);
+    if(this -> setor1 != NULL)
+        free_tree(this -> setor1);
+    if(this -> setor2 != NULL)
+        free_tree(this -> setor1);
+    if(this -> setor3 != NULL)
+        free_tree(this -> setor1);
+    if(this -> setor4 != NULL)
+        free_tree(this -> setor1);
+    free(this);
+}
+
 
 int main(int argc, char *argv[]){
 
@@ -123,6 +137,7 @@ int main(int argc, char *argv[]){
         //printf("%02X - %p \n", compacted_arr[i], &compacted_arr[i]); 
     }
     
+    free_tree(&tree);
 
     return 0;
 }
